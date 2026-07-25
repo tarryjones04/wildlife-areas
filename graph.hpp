@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <queue>
+#include <limits>
 
 // Structure to represent an edge with weight (distance in km)
 struct Edge {
@@ -30,6 +31,18 @@ struct Connection {
     // Comparison operator for sorting by distance
     bool operator<(const Connection& other) const {
         return distance < other.distance;
+    }
+};
+
+// Structure to represent a node for Dijkstra's algorithm
+struct Node {
+    std::string area;
+    double distance;
+
+    Node(const std::string& a, double d) : area(a), distance(d) {}
+
+    bool operator>(const Node& other) const {
+        return distance > other.distance;
     }
 };
 
@@ -251,6 +264,100 @@ public:
         std::cout << std::string(80, '-') << std::endl;
         std::cout << "Total areas visited: " << visitedAreas.size() << std::endl;
         std::cout << "Total distance traveled: " << std::fixed << std::setprecision(1) << totalDistance << " km" << std::endl;
+        std::cout << std::endl;
+    }
+
+    // Find shortest path using Dijkstra's algorithm
+    void findShortestPath(const std::string& startArea, const std::string& endArea) const {
+        if (adjacencyList.find(startArea) == adjacencyList.end()) {
+            std::cout << "Starting area " << startArea << " not found in graph." << std::endl;
+            return;
+        }
+        if (adjacencyList.find(endArea) == adjacencyList.end()) {
+            std::cout << "Ending area " << endArea << " not found in graph." << std::endl;
+            return;
+        }
+
+        if (startArea == endArea) {
+            std::cout << "\nStarting and ending areas are the same!" << std::endl;
+            std::cout << "Distance: 0 km" << std::endl;
+            return;
+        }
+
+        // Dijkstra's algorithm
+        std::unordered_map<std::string, double> distances;
+        std::unordered_map<std::string, std::string> previous;
+        std::priority_queue<Node, std::vector<Node>, std::greater<Node>> pq;
+
+        // Initialize distances
+        for (const auto& [area, _] : adjacencyList) {
+            distances[area] = std::numeric_limits<double>::infinity();
+            previous[area] = "";
+        }
+
+        distances[startArea] = 0.0;
+        pq.push(Node(startArea, 0.0));
+
+        while (!pq.empty()) {
+            Node current = pq.top();
+            pq.pop();
+
+            // Skip if we've already found a better path
+            if (current.distance > distances[current.area]) {
+                continue;
+            }
+
+            // If we reached the end area, we can stop
+            if (current.area == endArea) {
+                break;
+            }
+
+            // Check all neighbors
+            const auto& edges = adjacencyList.at(current.area);
+            for (const auto& edge : edges) {
+                double newDistance = distances[current.area] + edge.distance;
+
+                if (newDistance < distances[edge.destination]) {
+                    distances[edge.destination] = newDistance;
+                    previous[edge.destination] = current.area;
+                    pq.push(Node(edge.destination, newDistance));
+                }
+            }
+        }
+
+        // Reconstruct path
+        std::vector<std::string> path;
+        std::string current = endArea;
+
+        if (distances[endArea] == std::numeric_limits<double>::infinity()) {
+            std::cout << "\nNo path exists between " << startArea << " and " << endArea << std::endl;
+            return;
+        }
+
+        while (!current.empty()) {
+            path.push_back(current);
+            current = previous[current];
+        }
+
+        std::reverse(path.begin(), path.end());
+
+        // Display the shortest path
+        std::cout << "\n=== Shortest Path from " << startArea << " to " << endArea << " ===" << std::endl;
+        std::cout << std::string(80, '-') << std::endl;
+
+        for (size_t i = 0; i < path.size(); ++i) {
+            std::cout << "Step " << (i + 1) << ": " << path[i];
+            
+            if (i < path.size() - 1) {
+                double segmentDistance = getDistanceInternal(path[i], path[i + 1]);
+                std::cout << " -> " << std::fixed << std::setprecision(1) << segmentDistance << " km";
+            }
+            std::cout << std::endl;
+        }
+
+        std::cout << std::string(80, '-') << std::endl;
+        std::cout << "Total distance: " << std::fixed << std::setprecision(1) << distances[endArea] << " km" << std::endl;
+        std::cout << "Total areas visited: " << path.size() << std::endl;
         std::cout << std::endl;
     }
 
