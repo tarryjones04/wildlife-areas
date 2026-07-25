@@ -14,9 +14,10 @@ void displayMenu() {
     std::cout << "6. View graph statistics" << std::endl;
     std::cout << "7. View all connections sorted by distance" << std::endl;
     std::cout << "8. View visit order from a specific area" << std::endl;
-    std::cout << "9. Exit" << std::endl;
+    std::cout << "9. Find shortest path between two areas" << std::endl;
+    std::cout << "10. Exit" << std::endl;
     std::cout << std::string(50, '=') << std::endl;
-    std::cout << "Enter your choice (1-9): ";
+    std::cout << "Enter your choice (1-10): ";
 }
 
 void displayAllAreas(const Graph& graph) {
@@ -198,6 +199,65 @@ void viewVisitOrderFromArea(const Graph& graph) {
     graph.displayVisitOrderFromArea(selectedArea);
 }
 
+void findShortestPathMenu(const Graph& graph) {
+    std::cout << "\n--- Select Starting Area ---" << std::endl;
+    std::cout << "1. Kruger National Park" << std::endl;
+    std::cout << "2. Limpopo National Park" << std::endl;
+    std::cout << "3. Hwange National Park" << std::endl;
+    std::cout << "4. Chobe National Park" << std::endl;
+    std::cout << "5. Etosha National Park" << std::endl;
+    std::cout << "6. Kgalagadi Transfrontier Park" << std::endl;
+    std::cout << std::string(50, '-') << std::endl;
+    std::cout << "Enter your choice (1-6): ";
+
+    int choice1;
+    std::cin >> choice1;
+
+    std::cout << "\n--- Select Ending Area ---" << std::endl;
+    std::cout << "1. Kruger National Park" << std::endl;
+    std::cout << "2. Limpopo National Park" << std::endl;
+    std::cout << "3. Hwange National Park" << std::endl;
+    std::cout << "4. Chobe National Park" << std::endl;
+    std::cout << "5. Etosha National Park" << std::endl;
+    std::cout << "6. Kgalagadi Transfrontier Park" << std::endl;
+    std::cout << std::string(50, '-') << std::endl;
+    std::cout << "Enter your choice (1-6): ";
+
+    int choice2;
+    std::cin >> choice2;
+
+    // Clear input buffer
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::string startArea, endArea;
+    
+    switch (choice1) {
+        case 1: startArea = "Kruger National Park"; break;
+        case 2: startArea = "Limpopo National Park"; break;
+        case 3: startArea = "Hwange National Park"; break;
+        case 4: startArea = "Chobe National Park"; break;
+        case 5: startArea = "Etosha National Park"; break;
+        case 6: startArea = "Kgalagadi Transfrontier Park"; break;
+        default:
+            std::cout << "Invalid choice for starting area." << std::endl;
+            return;
+    }
+
+    switch (choice2) {
+        case 1: endArea = "Kruger National Park"; break;
+        case 2: endArea = "Limpopo National Park"; break;
+        case 3: endArea = "Hwange National Park"; break;
+        case 4: endArea = "Chobe National Park"; break;
+        case 5: endArea = "Etosha National Park"; break;
+        case 6: endArea = "Kgalagadi Transfrontier Park"; break;
+        default:
+            std::cout << "Invalid choice for ending area." << std::endl;
+            return;
+    }
+
+    graph.findShortestPath(startArea, endArea);
+}
+
 int main() {
     // Create a graph of conservation areas
     Graph conservationNetwork;
@@ -264,13 +324,17 @@ int main() {
                 break;
 
             case 9:
+                findShortestPathMenu(conservationNetwork);
+                break;
+
+            case 10:
                 std::cout << "\nThank you for using the Wildlife Conservation Areas Network!" << std::endl;
                 std::cout << "Goodbye!" << std::endl;
                 running = false;
                 break;
 
             default:
-                std::cout << "\nInvalid choice. Please enter a number between 1 and 9." << std::endl;
+                std::cout << "\nInvalid choice. Please enter a number between 1 and 10." << std::endl;
         }
     }
 
