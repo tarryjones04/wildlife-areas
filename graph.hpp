@@ -7,6 +7,7 @@
 #include <string>
 #include <iomanip>
 #include <algorithm>
+#include <queue>
 
 // Structure to represent an edge with weight (distance in km)
 struct Edge {
@@ -15,6 +16,21 @@ struct Edge {
 
     Edge(const std::string& dest, double dist) 
         : destination(dest), distance(dist) {}
+};
+
+// Structure to represent a connection for sorting
+struct Connection {
+    std::string area1;
+    std::string area2;
+    double distance;
+
+    Connection(const std::string& a1, const std::string& a2, double dist)
+        : area1(a1), area2(a2), distance(dist) {}
+
+    // Comparison operator for sorting by distance
+    bool operator<(const Connection& other) const {
+        return distance < other.distance;
+    }
 };
 
 // Graph class using adjacency list representation
@@ -132,6 +148,109 @@ public:
             }
             std::cout << std::endl;
         }
+        std::cout << std::endl;
+    }
+
+    // Display connections sorted by distance (smallest to largest)
+    void displayConnectionsByDistance() const {
+        std::cout << "\n=== Connections Sorted by Distance (Smallest to Largest) ===" << std::endl;
+        std::cout << std::string(70, '-') << std::endl;
+
+        std::vector<Connection> connections;
+
+        // Collect all connections
+        for (const auto& [area, edges] : adjacencyList) {
+            for (const auto& edge : edges) {
+                // Only add each connection once (area1 < area2 alphabetically)
+                if (area < edge.destination) {
+                    connections.emplace_back(area, edge.destination, edge.distance);
+                }
+            }
+        }
+
+        // Sort by distance (smallest to largest)
+        std::sort(connections.begin(), connections.end());
+
+        // Display sorted connections with visit order
+        std::cout << std::setw(5) << "Order" << std::setw(30) << "Area 1" 
+                  << std::setw(30) << "Area 2" << std::setw(10) << "Distance" << std::endl;
+        std::cout << std::string(70, '-') << std::endl;
+
+        for (size_t i = 0; i < connections.size(); ++i) {
+            std::cout << std::setw(5) << (i + 1)
+                      << std::setw(30) << connections[i].area1
+                      << std::setw(30) << connections[i].area2
+                      << std::setw(10) << std::fixed << std::setprecision(1) << connections[i].distance << " km" << std::endl;
+        }
+        std::cout << std::string(70, '-') << std::endl;
+    }
+
+    // Display visit order starting from a specific area, visiting smallest distances first
+    void displayVisitOrderFromArea(const std::string& startArea) const {
+        if (adjacencyList.find(startArea) == adjacencyList.end()) {
+            std::cout << "Area " << startArea << " not found in graph." << std::endl;
+            return;
+        }
+
+        std::cout << "\n=== Visit Order Starting from " << startArea << " ===" << std::endl;
+        std::cout << std::string(80, '-') << std::endl;
+
+        std::vector<std::string> visitedAreas;
+        std::vector<std::pair<std::string, double>> visitOrder;
+        
+        visitedAreas.push_back(startArea);
+        std::string currentArea = startArea;
+
+        std::cout << "Step 1: Start at " << currentArea << std::endl;
+        std::cout << std::string(80, '-') << std::endl;
+
+        int step = 2;
+
+        // Visit neighbors in order of smallest distance first
+        while (visitedAreas.size() < adjacencyList.size()) {
+            const auto& edges = adjacencyList.at(currentArea);
+            
+            // Sort edges by distance
+            std::vector<Edge> sortedEdges = edges;
+            std::sort(sortedEdges.begin(), sortedEdges.end(),
+                     [](const Edge& a, const Edge& b) { return a.distance < b.distance; });
+
+            bool foundNext = false;
+
+            // Find the nearest unvisited neighbor
+            for (const auto& edge : sortedEdges) {
+                if (std::find(visitedAreas.begin(), visitedAreas.end(), edge.destination) == visitedAreas.end()) {
+                    std::cout << "Step " << step << ": Travel from " << currentArea << " to " << edge.destination 
+                              << " (" << std::fixed << std::setprecision(1) << edge.distance << " km)" << std::endl;
+                    
+                    visitedAreas.push_back(edge.destination);
+                    visitOrder.push_back({edge.destination, edge.distance});
+                    currentArea = edge.destination;
+                    foundNext = true;
+                    step++;
+                    break;
+                }
+            }
+
+            if (!foundNext) {
+                break;
+            }
+        }
+
+        std::cout << std::string(80, '-') << std::endl;
+        std::cout << "\nVisit Summary:" << std::endl;
+        std::cout << std::string(80, '-') << std::endl;
+
+        double totalDistance = 0.0;
+        for (size_t i = 0; i < visitOrder.size(); ++i) {
+            std::cout << (i + 1) << ". " << visitOrder[i].first 
+                      << " (Distance: " << std::fixed << std::setprecision(1) << visitOrder[i].second << " km)" << std::endl;
+            totalDistance += visitOrder[i].second;
+        }
+
+        std::cout << std::string(80, '-') << std::endl;
+        std::cout << "Total areas visited: " << visitedAreas.size() << std::endl;
+        std::cout << "Total distance traveled: " << std::fixed << std::setprecision(1) << totalDistance << " km" << std::endl;
         std::cout << std::endl;
     }
 
