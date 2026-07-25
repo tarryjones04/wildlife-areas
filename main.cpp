@@ -12,9 +12,11 @@ void displayMenu() {
     std::cout << "4. View adjacency list representation" << std::endl;
     std::cout << "5. View adjacency matrix representation" << std::endl;
     std::cout << "6. View graph statistics" << std::endl;
-    std::cout << "7. Exit" << std::endl;
+    std::cout << "7. View all connections sorted by distance" << std::endl;
+    std::cout << "8. View visit order from a specific area" << std::endl;
+    std::cout << "9. Exit" << std::endl;
     std::cout << std::string(50, '=') << std::endl;
-    std::cout << "Enter your choice (1-7): ";
+    std::cout << "Enter your choice (1-9): ";
 }
 
 void displayAllAreas(const Graph& graph) {
@@ -151,6 +153,51 @@ void viewGraphStatistics(const Graph& graph) {
     std::cout << "Data structure: Adjacency List (with adjacency matrix support)" << std::endl;
 }
 
+void viewVisitOrderFromArea(const Graph& graph) {
+    std::cout << "\n--- Select Starting Area for Visit Order ---" << std::endl;
+    std::cout << "1. Kruger National Park" << std::endl;
+    std::cout << "2. Limpopo National Park" << std::endl;
+    std::cout << "3. Hwange National Park" << std::endl;
+    std::cout << "4. Chobe National Park" << std::endl;
+    std::cout << "5. Etosha National Park" << std::endl;
+    std::cout << "6. Kgalagadi Transfrontier Park" << std::endl;
+    std::cout << std::string(50, '-') << std::endl;
+    std::cout << "Enter your choice (1-6): ";
+
+    int choice;
+    std::cin >> choice;
+
+    // Clear input buffer
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    std::string selectedArea;
+    switch (choice) {
+        case 1:
+            selectedArea = "Kruger National Park";
+            break;
+        case 2:
+            selectedArea = "Limpopo National Park";
+            break;
+        case 3:
+            selectedArea = "Hwange National Park";
+            break;
+        case 4:
+            selectedArea = "Chobe National Park";
+            break;
+        case 5:
+            selectedArea = "Etosha National Park";
+            break;
+        case 6:
+            selectedArea = "Kgalagadi Transfrontier Park";
+            break;
+        default:
+            std::cout << "Invalid choice. Please try again." << std::endl;
+            return;
+    }
+
+    graph.displayVisitOrderFromArea(selectedArea);
+}
+
 int main() {
     // Create a graph of conservation areas
     Graph conservationNetwork;
@@ -209,13 +256,21 @@ int main() {
                 break;
 
             case 7:
+                conservationNetwork.displayConnectionsByDistance();
+                break;
+
+            case 8:
+                viewVisitOrderFromArea(conservationNetwork);
+                break;
+
+            case 9:
                 std::cout << "\nThank you for using the Wildlife Conservation Areas Network!" << std::endl;
                 std::cout << "Goodbye!" << std::endl;
                 running = false;
                 break;
 
             default:
-                std::cout << "\nInvalid choice. Please enter a number between 1 and 7." << std::endl;
+                std::cout << "\nInvalid choice. Please enter a number between 1 and 9." << std::endl;
         }
     }
 
