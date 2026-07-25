@@ -5,19 +5,19 @@ int main() {
     Graph conservationNetwork;
 
     // Add conservation areas (nodes)
-    conservationNetwork.addArea("Serengeti National Park");
-    conservationNetwork.addArea("Masai Mara National Reserve");
-    conservationNetwork.addArea("Amboseli National Park");
-    conservationNetwork.addArea("Tsavo East National Park");
-    conservationNetwork.addArea("Mount Kenya National Park");
+    conservationNetwork.addArea("Kruger National Park");
+    conservationNetwork.addArea("Limpopo National Park");
+    conservationNetwork.addArea("Hwange National Park");
+    conservationNetwork.addArea("Etosha National Park");
+    conservationNetwork.addArea("Kgalagadi Transfrontier Park");
 
     // Add connections between areas with distances in km
-    conservationNetwork.addConnection("Serengeti National Park", "Masai Mara National Reserve", 150.5);
-    conservationNetwork.addConnection("Masai Mara National Reserve", "Amboseli National Park", 200.0);
-    conservationNetwork.addConnection("Amboseli National Park", "Tsavo East National Park", 280.3);
-    conservationNetwork.addConnection("Tsavo East National Park", "Mount Kenya National Park", 220.7);
-    conservationNetwork.addConnection("Mount Kenya National Park", "Serengeti National Park", 310.2);
-    conservationNetwork.addConnection("Serengeti National Park", "Amboseli National Park", 450.0);
+    conservationNetwork.addConnection("Kruger National Park", "Limpopo National Park", 280.0);
+    conservationNetwork.addConnection("Limpopo National Park", "Hwange National Park",250.0 );
+    conservationNetwork.addConnection("Hwange National Park", "Chobe National Park", 177.0);
+    conservationNetwork.addConnection("Chobe National Park", "Etosha National Park", 1030.0);
+    conservationNetwork.addConnection("Etosha National Park", "Kgalagadi Transfrontier Park", 1211.0);
+    conservationNetwork.addConnection("Kgalagadi Transfrontier Park", "Kruger National Park",1430.0 );
 
     // Display the entire graph as adjacency list
     conservationNetwork.displayGraph();
@@ -26,11 +26,11 @@ int main() {
     conservationNetwork.displayAdjacencyMatrix();
 
     // Get neighbors of specific areas
-    conservationNetwork.getNeighbors("Serengeti National Park");
-    conservationNetwork.getNeighbors("Amboseli National Park");
+    conservationNetwork.getNeighbors("Kruger National Park");
+    conservationNetwork.getNeighbors("Chobe National Park");
 
     // Get distance between two areas
-    double dist = conservationNetwork.getDistance("Serengeti National Park", "Masai Mara National Reserve");
+    double dist = conservationNetwork.getDistance("Kruger National Park", "Limpopo National Reserve");
     if (dist > 0) {
         std::cout << "\nDistance: " << dist << " km\n" << std::endl;
     }
